@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Dokter</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f5f5f5; }
+        .navbar {
+            background: #dc3545;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #dc3545;
+            color: white;
+        }
+        tr:hover { background: #f8f9fa; }
+        .btn {
+            padding: 8px 15px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .btn:hover { background: #0056b3; }
+        a.logout {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div><strong>🩺 Dashboard Dokter</strong></div>
+        <div>
+            <span>👤 {{.Nama}}</span> | 
+            <a href="/logout" class="logout">Logout</a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="card">
+            <h2>Appointment Hari Ini</h2>
+            <p style="color: #666; margin-bottom: 10px;">
+                Daftar pasien yang terjadwal untuk konsultasi hari ini
+            </p>
+            
+            {{if .Appointments}}
+            <table>
+                <thead>
+                    <tr>
+                        <th>No. Registrasi</th>
+                        <th>Nama Pasien</th>
+                        <th>Waktu</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{range .Appointments}}
+                    <tr>
+                        <td><strong>{{.NomorRegistrasi}}</strong></td>
+                        <td>{{.NamaPasien}}</td>
+                        <td>{{if .WaktuKonsultasi.Valid}}{{.WaktuKonsultasi.String}}{{else}}-{{end}}</td>
+                        <td>
+                            <a href="/dokter/konsultasi/{{.AppointmentID}}" class="btn">
+                                🩺 Mulai Konsultasi
+                            </a>
+                        </td>
+                    </tr>
+                    {{end}}
+                </tbody>
+            </table>
+            {{else}}
+            <p style="margin-top: 20px; color: #666;">
+                Tidak ada appointment hari ini.
+            </p>
+            {{end}}
+        </div>
+    </div>
+</body>
+</html>

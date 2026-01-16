@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Input Hasil Konsultasi</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f5f5f5; }
+        .navbar {
+            background: #dc3545;
+            color: white;
+            padding: 15px 30px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            font-family: Arial, sans-serif;
+            resize: vertical;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover { background: #c82333; }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #dc3545;
+            text-decoration: none;
+        }
+        .info-box {
+            background: #e7f3ff;
+            padding: 15px;
+            border-left: 4px solid #2196F3;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <strong>🩺 Input Hasil Konsultasi</strong>
+    </div>
+    
+    <div class="container">
+        <div class="card">
+            <h2>Form Hasil Konsultasi</h2>
+            
+            <div class="info-box">
+                <strong>💡 Tips Pengisian:</strong><br>
+                - Gejala: Tuliskan keluhan pasien secara detail<br>
+                - Diagnosa: Hasil pemeriksaan dan diagnosa medis<br>
+                - Resep: Format "Nama Obat - Aturan Pakai" (contoh: Paracetamol - 3x1 sehari)
+            </div>
+            
+            <form method="POST">
+                <div class="form-group">
+                    <label for="gejala">Gejala Pasien:</label>
+                    <textarea id="gejala" name="gejala" rows="4" required 
+                              placeholder="Contoh: Demam tinggi 38°C, batuk berdahak, sakit kepala"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="diagnosa">Diagnosa:</label>
+                    <textarea id="diagnosa" name="diagnosa" rows="4" required 
+                              placeholder="Contoh: ISPA (Infeksi Saluran Pernapasan Akut)"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="resep">Resep Obat:</label>
+                    <textarea id="resep" name="resep" rows="5" required 
+                              placeholder="Contoh:
+Paracetamol 500mg - 3x1 sehari sesudah makan
+Amoxicillin 500mg - 2x1 sehari sebelum makan
+Obat batuk OBH - 3x1 sendok makan"></textarea>
+                </div>
+                
+                <button type="submit">💾 Simpan Hasil Konsultasi</button>
+            </form>
+            
+            <a href="/dokter/dashboard" class="back-link">← Kembali ke Dashboard</a>
+        </div>
+    </div>
+</body>
+</html>

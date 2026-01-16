@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Booking Konsultasi</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f5f5f5; }
+        .navbar {
+            background: #667eea;
+            color: white;
+            padding: 15px 30px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        input[type="date"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover { background: #5568d3; }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #667eea;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <strong>📅 Booking Konsultasi</strong>
+    </div>
+    
+    <div class="container">
+        <div class="card">
+            <h2>Form Booking Konsultasi</h2>
+            <p style="color: #666; margin-bottom: 20px;">
+                Pilih tanggal konsultasi yang Anda inginkan. Admin akan menghubungi Anda untuk konfirmasi jadwal.
+            </p>
+            
+            <form method="POST">
+                <div class="form-group">
+                    <label for="tanggal">Tanggal Konsultasi:</label>
+                    <input type="date" id="tanggal" name="tanggal" required 
+                           min="<?php echo date('Y-m-d'); ?>">
+                </div>
+                
+                <button type="submit">📤 Kirim Request Booking</button>
+            </form>
+            
+            <a href="/pasien/dashboard" class="back-link">← Kembali ke Dashboard</a>
+        </div>
+    </div>
+</body>
+</html>
