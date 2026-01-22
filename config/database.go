@@ -2,7 +2,6 @@ package config
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"os"
 
@@ -14,15 +13,10 @@ var DB *sql.DB
 func InitDB() {
 	var err error
 
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true",
-		os.Getenv("MYSQLUSER"),
-		os.Getenv("MYSQLPASSWORD"),
-		os.Getenv("MYSQLHOST"),
-		os.Getenv("MYSQLPORT"),
-		os.Getenv("MYSQLDATABASE"),
-	)
-
-	log.Println("Connecting to DB host:", os.Getenv("MYSQLHOST"))
+	dsn := os.Getenv("MYSQL_URL")
+	if dsn == "" {
+		log.Fatal("MYSQL_URL is not set")
+	}
 
 	DB, err = sql.Open("mysql", dsn)
 	if err != nil {
