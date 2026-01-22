@@ -3,7 +3,9 @@ package config
 import (
 	"database/sql"
 	"log"
+	"net/url"
 	"os"
+	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -11,12 +13,24 @@ import (
 var DB *sql.DB
 
 func InitDB() {
-	var err error
-
-	dsn := os.Getenv("MYSQL_URL")
-	if dsn == "" {
+	rawURL := os.Getenv("MYSQL_URL")
+	if rawURL == "" {
 		log.Fatal("MYSQL_URL is not set")
 	}
+
+	u, err := url.Parse(rawURL)
+	if err != nil {
+		log.Fatal("Invalid MYSQL_URL:", err)
+	}
+
+	user := u.User.Username()
+	pass, _ := u.User.Password()
+	host := u.Host
+	dbName := strings.TrimPrefix(u.Path, "/")
+
+	dsn := user + ":" + pass + "@tcp(" + host + ")/" + dbName + "?parseTime=true"
+
+	log.Println("Connecting to DB host:", host)
 
 	DB, err = sql.Open("mysql", dsn)
 	if err != nil {
