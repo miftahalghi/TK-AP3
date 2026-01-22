@@ -13,9 +13,9 @@ import (
 var DB *sql.DB
 
 func InitDB() {
-	rawURL := os.Getenv("MYSQL_URL")
+	rawURL := os.Getenv("MYSQL_PUBLIC_URL")
 	if rawURL == "" {
-		log.Fatal("MYSQL_URL is not set")
+		log.Fatal("MYSQL_PUBLIC_URL is not set")
 	}
 
 	u, err := url.Parse(rawURL)
