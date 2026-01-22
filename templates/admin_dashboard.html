@@ -40,15 +40,62 @@
             color: white;
         }
         tr:hover { background: #f8f9fa; }
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
         .btn {
-            padding: 8px 15px;
-            background: #007bff;
+            padding: 6px 12px;
             color: white;
             text-decoration: none;
             border-radius: 5px;
-            font-size: 14px;
+            font-size: 13px;
+            border: none;
+            cursor: pointer;
+            white-space: nowrap;
         }
-        .btn:hover { background: #0056b3; }
+        .btn-approve {
+            background: #28a745;
+        }
+        .btn-approve:hover {
+            background: #218838;
+        }
+        .btn-reschedule {
+            background: #ffc107;
+            color: #000;
+        }
+        .btn-reschedule:hover {
+            background: #e0a800;
+        }
+        .btn-cancel {
+            background: #dc3545;
+        }
+        .btn-cancel:hover {
+            background: #c82333;
+        }
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .status-approved {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
         a.logout {
             color: white;
             text-decoration: none;
@@ -69,9 +116,9 @@
     
     <div class="container">
         <div class="card">
-            <h2>Pending Appointments</h2>
+            <h2>Appointments Management</h2>
             <p style="color: #666; margin-bottom: 10px;">
-                Daftar booking konsultasi yang menunggu persetujuan
+                Kelola appointment yang pending dan approved
             </p>
             
             {{if .Appointments}}
@@ -81,6 +128,7 @@
                         <th>No. Registrasi</th>
                         <th>Nama Pasien</th>
                         <th>Tanggal Request</th>
+                        <th>Status</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -91,9 +139,29 @@
                         <td>{{.NamaPasien}}</td>
                         <td>{{.TanggalKonsultasi.Format "02/01/2006"}}</td>
                         <td>
-                            <a href="/admin/approve/{{.AppointmentID}}" class="btn">
-                                ✅ Approve
-                            </a>
+                            <span class="status-badge status-{{.Status}}">
+                                {{.Status}}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+    <!-- Debug info -->
+    <p>Status: "{{.Status}}" (Length: {{len .Status}})</p>
+    <p>AppointmentID: {{.AppointmentID}}</p>
+    
+    <!-- Test dengan berbagai kemungkinan -->
+    {{if eq .Status "pending"}}
+        <p style="color: green;">✅ Kondisi "pending" terpenuhi</p>
+    {{else}}
+        <p style="color: red;">❌ Status bukan "pending"</p>
+    {{end}}
+    
+    {{if eq .Status "approved"}}
+        <p style="color: green;">✅ Kondisi "approved" terpenuhi</p>
+    {{else}}
+        <p style="color: red;">❌ Status bukan "approved"</p>
+    {{end}}
+</div>
                         </td>
                     </tr>
                     {{end}}
@@ -101,7 +169,7 @@
             </table>
             {{else}}
             <p style="margin-top: 20px; color: #666;">
-                Tidak ada pending appointment.
+                Tidak ada appointment saat ini.
             </p>
             {{end}}
         </div>

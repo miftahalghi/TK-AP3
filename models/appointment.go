@@ -127,6 +127,106 @@ func CompleteConsultation(db *sql.DB, appointmentID int, gejala, diagnosa, resep
 	return err
 }
 
+// GetPatientActiveAppointments - Pasien melihat appointment aktif (pending & approved)
+func GetPatientActiveAppointments(db *sql.DB, patientID int) ([]Appointment, error) {
+	query := `
+		SELECT 
+			a.appointment_id, a.nomor_registrasi,
+			a.tanggal_konsultasi, a.waktu_konsultasi,
+			a.status, u.nama AS nama_dokter
+		FROM appointments a
+		LEFT JOIN users u ON a.doctor_id = u.user_id
+		WHERE a.patient_id = ? 
+		  AND a.status IN ('pending', 'approved')
+		ORDER BY a.tanggal_konsultasi ASC
+	`
+
+	rows, err := db.Query(query, patientID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var appointments []Appointment
+	for rows.Next() {
+		var apt Appointment
+		var namaDokter sql.NullString
+
+		err := rows.Scan(
+			&apt.AppointmentID,
+			&apt.NomorRegistrasi,
+			&apt.TanggalKonsultasi,
+			&apt.WaktuKonsultasi,
+			&apt.Status,
+			&namaDokter,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		if namaDokter.Valid {
+			apt.NamaDokter = namaDokter.String
+		} else {
+			apt.NamaDokter = "Belum ditentukan"
+		}
+
+		appointments = append(appointments, apt)
+	}
+
+	return appointments, nil
+}
+
+// CancelAppointment - Cancel appointment (update status jadi cancelled)
+func CancelAppointment(db *sql.DB, appointmentID int) error {
+	query := `UPDATE appointments SET status = 'cancelled' WHERE appointment_id = ?`
+	_, err := db.Exec(query, appointmentID)
+	return err
+}
+
+// RescheduleAppointment - Admin ubah jadwal appointment
+func RescheduleAppointment(db *sql.DB, appointmentID, doctorID int, tanggal, waktu string) error {
+	query := `UPDATE appointments 
+	          SET doctor_id = ?, tanggal_konsultasi = ?, waktu_konsultasi = ? 
+	          WHERE appointment_id = ?`
+
+	_, err := db.Exec(query, doctorID, tanggal, waktu, appointmentID)
+	return err
+}
+
+// GetAppointmentByID - Get detail appointment
+func GetAppointmentByID(db *sql.DB, appointmentID int) (*Appointment, error) {
+	var apt Appointment
+	query := `
+		SELECT 
+			a.appointment_id, a.nomor_registrasi, a.patient_id,
+			a.doctor_id, a.tanggal_konsultasi, a.waktu_konsultasi,
+			a.status, u.nama AS nama_pasien
+		FROM appointments a
+		JOIN users u ON a.patient_id = u.user_id
+		WHERE a.appointment_id = ?
+	`
+
+	var namaPasien string
+	err := db.QueryRow(query, appointmentID).Scan(
+		&apt.AppointmentID,
+		&apt.NomorRegistrasi,
+		&apt.PatientID,
+		&apt.DoctorID,
+		&apt.TanggalKonsultasi,
+		&apt.WaktuKonsultasi,
+		&apt.Status,
+		&namaPasien,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	apt.NamaPasien = namaPasien
+
+	return &apt, nil
+}
+
 // GetPatientHistory - Pasien melihat riwayat konsultasi
 func GetPatientHistory(db *sql.DB, patientID int) ([]Appointment, error) {
 	query := `
@@ -149,19 +249,88 @@ func GetPatientHistory(db *sql.DB, patientID int) ([]Appointment, error) {
 	var history []Appointment
 	for rows.Next() {
 		var apt Appointment
+		var namaDokter sql.NullString // ← UBAH: Gunakan sql.NullString untuk handle NULL
+
 		err := rows.Scan(
 			&apt.TanggalKonsultasi,
 			&apt.Status,
 			&apt.Gejala,
 			&apt.Diagnosa,
 			&apt.ResepObat,
-			&apt.NamaDokter,
+			&namaDokter, // ← Scan ke variable temporary
 		)
 		if err != nil {
 			return nil, err
 		}
+
+		// Convert sql.NullString ke string biasa
+		if namaDokter.Valid {
+			apt.NamaDokter = namaDokter.String
+		} else {
+			apt.NamaDokter = "Belum ditentukan" // Default value jika NULL
+		}
+
 		history = append(history, apt)
 	}
 
 	return history, nil
+}
+
+// GetAllAppointments - Admin melihat SEMUA appointments dengan berbagai status
+func GetAllAppointments(db *sql.DB) ([]Appointment, error) {
+	query := `
+		SELECT 
+			a.appointment_id, a.nomor_registrasi, 
+			a.tanggal_konsultasi, a.waktu_konsultasi,
+			a.status, a.created_at,
+			up.nama AS nama_pasien,
+			ud.nama AS nama_dokter
+		FROM appointments a
+		JOIN users up ON a.patient_id = up.user_id
+		LEFT JOIN users ud ON a.doctor_id = ud.user_id
+		ORDER BY 
+			CASE a.status
+				WHEN 'pending' THEN 1
+				WHEN 'approved' THEN 2
+				WHEN 'completed' THEN 3
+				WHEN 'cancelled' THEN 4
+			END,
+			a.tanggal_konsultasi ASC
+	`
+
+	rows, err := db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var appointments []Appointment
+	for rows.Next() {
+		var apt Appointment
+		var namaDokter sql.NullString
+
+		err := rows.Scan(
+			&apt.AppointmentID,
+			&apt.NomorRegistrasi,
+			&apt.TanggalKonsultasi,
+			&apt.WaktuKonsultasi,
+			&apt.Status,
+			&apt.CreatedAt,
+			&apt.NamaPasien,
+			&namaDokter,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		if namaDokter.Valid {
+			apt.NamaDokter = namaDokter.String
+		} else {
+			apt.NamaDokter = "Belum ditentukan"
+		}
+
+		appointments = append(appointments, apt)
+	}
+
+	return appointments, nil
 }

@@ -7,6 +7,7 @@ import (
 	"klinik-app/middleware"
 	"klinik-app/models"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -14,12 +15,42 @@ import (
 func PasienDashboard(w http.ResponseWriter, r *http.Request) {
 	sess := middleware.GetSession(r)
 
+	// Get active appointments
+	appointments, err := models.GetPatientActiveAppointments(config.DB, sess["UserID"].(int))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	data := map[string]interface{}{
+		"Nama":         sess["Nama"],
+		"Appointments": appointments,
+	}
+
 	tmpl, err := template.ParseFiles("templates/pasien_dashboard.html")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	tmpl.Execute(w, sess)
+	tmpl.Execute(w, data)
+}
+
+// PasienCancelAppointment - Pasien cancel appointment
+func PasienCancelAppointment(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Redirect(w, r, "/pasien/dashboard", http.StatusSeeOther)
+		return
+	}
+
+	appointmentID, _ := strconv.Atoi(r.FormValue("appointment_id"))
+
+	err := models.CancelAppointment(config.DB, appointmentID)
+	if err != nil {
+		http.Error(w, "Gagal cancel appointment: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, r, "/pasien/dashboard", http.StatusSeeOther)
 }
 
 // PasienBookingPage - Tampilkan form booking

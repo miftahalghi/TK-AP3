@@ -11,7 +11,7 @@ var DB *sql.DB
 
 func InitDB() {
 	var err error
-	dsn := "root:@tcp(localhost:3306)/klinik_db?parseTime=true"
+	dsn := "root:@tcp(localhost:3306)/db_klinik?parseTime=true"
 
 	DB, err = sql.Open("mysql", dsn)
 	if err != nil {

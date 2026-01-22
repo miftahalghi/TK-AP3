@@ -67,6 +67,53 @@
             <p>Role: <strong>Pasien</strong></p>
         </div>
         
+        <!-- Appointment Aktif -->
+        {{if .Appointments}}
+        <div class="card">
+            <h3>📋 Appointment Saya</h3>
+            <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                <thead>
+                    <tr style="background: #f8f9fa;">
+                        <th style="padding: 10px; text-align: left; border-bottom: 2px solid #ddd;">No. Reg</th>
+                        <th style="padding: 10px; text-align: left; border-bottom: 2px solid #ddd;">Tanggal</th>
+                        <th style="padding: 10px; text-align: left; border-bottom: 2px solid #ddd;">Waktu</th>
+                        <th style="padding: 10px; text-align: left; border-bottom: 2px solid #ddd;">Dokter</th>
+                        <th style="padding: 10px; text-align: left; border-bottom: 2px solid #ddd;">Status</th>
+                        <th style="padding: 10px; text-align: center; border-bottom: 2px solid #ddd;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{range .Appointments}}
+                    <tr>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee;">{{.NomorRegistrasi}}</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee;">{{.TanggalKonsultasi.Format "02/01/2006"}}</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee;">
+                            {{if .WaktuKonsultasi.Valid}}{{.WaktuKonsultasi.String}}{{else}}-{{end}}
+                        </td>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee;">{{.NamaDokter}}</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee;">
+                            {{if eq .Status "pending"}}
+                            <span style="padding: 5px 10px; border-radius: 15px; font-size: 12px; background: #fff3cd; color: #856404;">{{.Status}}</span>
+                            {{else}}
+                            <span style="padding: 5px 10px; border-radius: 15px; font-size: 12px; background: #d1ecf1; color: #0c5460;">{{.Status}}</span>
+                            {{end}}
+                        </td>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: center;">
+                            <form method="POST" action="/pasien/cancel-appointment" style="display: inline;" 
+                                  onsubmit="return confirm('Yakin ingin cancel appointment ini?');">
+                                <input type="hidden" name="appointment_id" value="{{.AppointmentID}}">
+                                <button type="submit" style="padding: 5px 10px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 12px;">
+                                    ❌ Cancel
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {{end}}
+                </tbody>
+            </table>
+        </div>
+        {{end}}
+        
         <div class="menu-grid">
             <a href="/pasien/booking" class="menu-item">
                 <h3>📅 Buat Penjadwalan</h3>

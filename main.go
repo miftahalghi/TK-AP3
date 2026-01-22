@@ -22,6 +22,8 @@ func main() {
 	r.HandleFunc("/", handlers.LoginPage).Methods("GET")
 	r.HandleFunc("/login", handlers.LoginHandler).Methods("POST")
 	r.HandleFunc("/logout", handlers.LogoutHandler).Methods("GET")
+	r.HandleFunc("/register", handlers.RegisterPage).Methods("GET")
+	r.HandleFunc("/register", handlers.RegisterHandler).Methods("POST")
 
 	// Pasien routes (protected)
 	r.HandleFunc("/pasien/dashboard",
@@ -48,6 +50,12 @@ func main() {
 		),
 	).Methods("GET")
 
+	r.HandleFunc("/pasien/cancel-appointment",
+		middleware.RequireAuth(
+			middleware.RequireRole("pasien", handlers.PasienCancelAppointment),
+		),
+	).Methods("POST")
+
 	// Admin routes (protected)
 	r.HandleFunc("/admin/dashboard",
 		middleware.RequireAuth(
@@ -64,6 +72,24 @@ func main() {
 	r.HandleFunc("/admin/approve/{id}",
 		middleware.RequireAuth(
 			middleware.RequireRole("admin", handlers.AdminApproveHandler),
+		),
+	).Methods("POST")
+
+	r.HandleFunc("/admin/reschedule/{id}",
+		middleware.RequireAuth(
+			middleware.RequireRole("admin", handlers.AdminReschedulePage),
+		),
+	).Methods("GET")
+
+	r.HandleFunc("/admin/reschedule/{id}",
+		middleware.RequireAuth(
+			middleware.RequireRole("admin", handlers.AdminRescheduleHandler),
+		),
+	).Methods("POST")
+
+	r.HandleFunc("/admin/cancel-appointment",
+		middleware.RequireAuth(
+			middleware.RequireRole("admin", handlers.AdminCancelAppointment),
 		),
 	).Methods("POST")
 
