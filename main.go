@@ -6,6 +6,7 @@ import (
 	"klinik-app/middleware"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 )
@@ -113,10 +114,17 @@ func main() {
 	).Methods("POST")
 
 	// Start server
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080" // fallback untuk local
+	}
+
 	log.Println("========================================")
 	log.Println("🏥 Sistem Informasi Klinik")
 	log.Println("========================================")
-	log.Println("Server running on: http://localhost:8080")
+	log.Println("Server running on port:", port)
 	log.Println("========================================")
-	log.Fatal(http.ListenAndServe(":8080", r))
+
+	log.Fatal(http.ListenAndServe(":"+port, r))
+
 }
