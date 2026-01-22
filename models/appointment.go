@@ -277,14 +277,18 @@ func GetPatientHistory(db *sql.DB, patientID int) ([]Appointment, error) {
 }
 
 // GetAllAppointments - Admin melihat SEMUA appointments dengan berbagai status
+// GetAllAppointments - Admin melihat SEMUA appointments dengan berbagai status
 func GetAllAppointments(db *sql.DB) ([]Appointment, error) {
 	query := `
 		SELECT 
-			a.appointment_id, a.nomor_registrasi, 
-			a.tanggal_konsultasi, a.waktu_konsultasi,
-			a.status, a.created_at,
+			a.appointment_id, 
+			a.nomor_registrasi, 
+			a.tanggal_konsultasi, 
+			a.waktu_konsultasi,
+			a.status, 
+			a.created_at,
 			up.nama AS nama_pasien,
-			ud.nama AS nama_dokter
+			COALESCE(ud.nama, '') AS nama_dokter
 		FROM appointments a
 		JOIN users up ON a.patient_id = up.user_id
 		LEFT JOIN users ud ON a.doctor_id = ud.user_id
@@ -307,7 +311,7 @@ func GetAllAppointments(db *sql.DB) ([]Appointment, error) {
 	var appointments []Appointment
 	for rows.Next() {
 		var apt Appointment
-		var namaDokter sql.NullString
+		var namaDokter sql.NullString // ← Tetap perlu ini
 
 		err := rows.Scan(
 			&apt.AppointmentID,
@@ -317,7 +321,7 @@ func GetAllAppointments(db *sql.DB) ([]Appointment, error) {
 			&apt.Status,
 			&apt.CreatedAt,
 			&apt.NamaPasien,
-			&namaDokter,
+			&namaDokter, // ← Scan ke variable ini dulu
 		)
 		if err != nil {
 			return nil, err
