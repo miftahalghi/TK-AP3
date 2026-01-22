@@ -22,10 +22,7 @@ func InitDB() {
 		os.Getenv("MYSQLDATABASE"),
 	)
 
-	// Fallback untuk LOCAL (jika ENV belum ada)
-	if os.Getenv("MYSQLHOST") == "" {
-		dsn = "root:@tcp(localhost:3306)/db_klinik?parseTime=true"
-	}
+	log.Println("Connecting to DB host:", os.Getenv("MYSQLHOST"))
 
 	DB, err = sql.Open("mysql", dsn)
 	if err != nil {
