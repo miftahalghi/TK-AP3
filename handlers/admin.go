@@ -125,6 +125,12 @@ func AdminReschedulePage(w http.ResponseWriter, r *http.Request) {
 		apt.NamaDokter = "Belum ditentukan"
 	}
 
+	// ✅ Convert DoctorID dari sql.NullInt64 ke int biasa
+	var selectedDoctorID int
+	if apt.DoctorID.Valid {
+		selectedDoctorID = int(apt.DoctorID.Int64)
+	}
+
 	// Get list dokter
 	doctors, err := models.GetDoctors(config.DB)
 	if err != nil {
@@ -133,8 +139,9 @@ func AdminReschedulePage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := map[string]interface{}{
-		"Appointment": apt,
-		"Doctors":     doctors,
+		"Appointment":      apt,
+		"Doctors":          doctors,
+		"SelectedDoctorID": selectedDoctorID, // ✅ Tambahkan ini
 	}
 
 	tmpl, err := template.ParseFiles("templates/admin_reschedule.html")

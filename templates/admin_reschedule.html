@@ -102,7 +102,7 @@
                     <label for="doctor_id">Dokter:</label>
                     <select id="doctor_id" name="doctor_id" required>
                         {{range .Doctors}}
-                        <option value="{{.UserID}}" {{if eq $.Appointment.DoctorID.Int64 (int64 .UserID)}}selected{{end}}>
+                        <option value="{{.UserID}}" {{if eq $.SelectedDoctorID .UserID}}selected{{end}}>
                             {{.Nama}}
                         </option>
                         {{end}}
