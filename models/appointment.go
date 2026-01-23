@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"fmt"
 	"time"
 )
 
@@ -311,7 +312,7 @@ func GetAllAppointments(db *sql.DB) ([]Appointment, error) {
 	var appointments []Appointment
 	for rows.Next() {
 		var apt Appointment
-		var namaDokter sql.NullString // ← Tetap perlu ini
+		var namaDokter sql.NullString
 
 		err := rows.Scan(
 			&apt.AppointmentID,
@@ -321,11 +322,15 @@ func GetAllAppointments(db *sql.DB) ([]Appointment, error) {
 			&apt.Status,
 			&apt.CreatedAt,
 			&apt.NamaPasien,
-			&namaDokter, // ← Scan ke variable ini dulu
+			&namaDokter,
 		)
 		if err != nil {
 			return nil, err
 		}
+
+		// DEBUG - Print ke console
+		fmt.Printf("DEBUG Backend: ID=%d, Status='%s', NamaPasien='%s'\n",
+			apt.AppointmentID, apt.Status, apt.NamaPasien)
 
 		if namaDokter.Valid {
 			apt.NamaDokter = namaDokter.String
