@@ -16,8 +16,8 @@ import (
 func AdminDashboard(w http.ResponseWriter, r *http.Request) {
 	sess := middleware.GetSession(r)
 
-	// Get pending appointments
-	appointments, err := models.GetPendingAppointments(config.DB)
+	// ✅ Ubah dari GetPendingAppointments ke GetAllAppointments
+	appointments, err := models.GetAllAppointments(config.DB)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
