@@ -145,21 +145,27 @@
                         </td>
                         <td>
                             <div class="action-buttons">
-    <!-- Debug info -->
-    <p>Status: "{{.Status}}" (Length: {{len .Status}})</p>
-    <p>AppointmentID: {{.AppointmentID}}</p>
+    <p style="background: yellow; padding: 5px;">Debug - Status: "{{.Status}}" (Length: {{len .Status}})</p>
     
-    <!-- Test dengan berbagai kemungkinan -->
     {{if eq .Status "pending"}}
         <p style="color: green;">✅ Kondisi "pending" terpenuhi</p>
+        <a href="/admin/approve/{{.AppointmentID}}" class="btn btn-approve">
+            ✅ Approve
+        </a>
     {{else}}
-        <p style="color: red;">❌ Status bukan "pending"</p>
+        <p style="color: red;">❌ Status: "{{.Status}}" - bukan "pending"</p>
     {{end}}
     
-    {{if eq .Status "approved"}}
-        <p style="color: green;">✅ Kondisi "approved" terpenuhi</p>
-    {{else}}
-        <p style="color: red;">❌ Status bukan "approved"</p>
+    {{if or (eq .Status "pending") (eq .Status "approved")}}
+        <a href="/admin/reschedule/{{.AppointmentID}}" class="btn btn-reschedule">
+            🔄 Reschedule
+        </a>
+        
+        <form method="POST" action="/admin/cancel-appointment" style="display: inline; margin: 0;" 
+            onsubmit="return confirm('⚠️ Yakin cancel appointment ini?\n\nNo. Reg: {{.NomorRegistrasi}}\nPasien: {{.NamaPasien}}');">
+            <input type="hidden" name="appointment_id" value="{{.AppointmentID}}">
+            <button type="submit" class="btn btn-cancel">❌ Cancel</button>
+        </form>
     {{end}}
 </div>
                         </td>
